@@ -1,6 +1,9 @@
 import {Ingredient} from '../shared/ingredient.model';
 
 export class Recipe {
+    static currentId = 1;
+
+    public id: number;
     public name: string;
     public description: string;
     public imagePath: string;
