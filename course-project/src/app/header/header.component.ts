@@ -6,15 +6,9 @@ import {Component, EventEmitter, OnInit, Output} from '@angular/core';
     styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-    @Output() navigationTriggered = new EventEmitter<string>();
-
     constructor() {
     }
 
     ngOnInit() {
-    }
-
-    navigate(targetPage) {
-        this.navigationTriggered.emit(targetPage);
     }
 }
