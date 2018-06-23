@@ -1,13 +1,16 @@
 import {Recipe} from './recipe.model';
 import {Ingredient} from '../shared/ingredient.model';
 import {Subject} from 'rxjs';
+import {ServerService} from '../shared/server.service';
+import {Injectable} from '@angular/core';
 
+@Injectable()
 export class RecipeService {
 
     recipesChanged = new Subject<Recipe[]>();
     private recipes: Recipe[] = [];
 
-    constructor() {
+    constructor(private serverService: ServerService) {
         this.addRecipe(
             new Recipe('Chicken wings',
                 'description',
@@ -51,5 +54,18 @@ export class RecipeService {
         const index = this.recipes.findIndex((recipe) => (recipe.id === recipeToDelete.id));
         this.recipes.splice(index, 1);
         this.recipesChanged.next(this.getRecipes());
+    }
+
+    fetchRecipes() {
+        this.serverService.getRecipes().subscribe(
+            (recipes: Recipe[]) => {
+                this.recipes = recipes;
+                this.recipesChanged.next(this.getRecipes());
+            }
+        );
+    }
+
+    saveRecipes() {
+        this.serverService.saveRecipes(this.recipes).subscribe();
     }
 }

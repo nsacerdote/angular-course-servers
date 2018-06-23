@@ -1,4 +1,5 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {RecipeService} from '../recipe-book/recipe.service';
 
 @Component({
     selector: 'app-header',
@@ -6,9 +7,17 @@ import {Component, EventEmitter, OnInit, Output} from '@angular/core';
     styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-    constructor() {
+    constructor(private recipeService: RecipeService) {
     }
 
     ngOnInit() {
+    }
+
+    onFetchData() {
+        this.recipeService.fetchRecipes();
+    }
+
+    onSaveData() {
+        this.recipeService.saveRecipes();
     }
 }
