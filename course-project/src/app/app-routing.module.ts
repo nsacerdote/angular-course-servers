@@ -10,18 +10,7 @@ import {SigninComponent} from './auth/signin/signin.component';
 import {AuthGuard} from './auth/auth-guard.service';
 
 const appRoutes: Routes = [
-    { path: '', redirectTo: '/recipes', pathMatch: 'full'},
-    { path: 'recipes', component: RecipeBookComponent, children: [
-            { path : '', component: SelectRecipeComponent, pathMatch: 'full' },
-            { path : 'new', component: RecipeEditComponent , canActivate : [AuthGuard]},
-            { path : ':id', component: RecipeDetailComponent },
-            { path : ':id/edit', component: RecipeEditComponent, canActivate : [AuthGuard]},
-        ]
-    },
-    { path: 'shopping-list', component: ShoppingListComponent },
-    { path: 'signin', component: SigninComponent },
-    { path: 'signup', component: SignupComponent },
-    { path: '**', redirectTo: '/recipes' }
+    { path: '', redirectTo: '/recipes', pathMatch: 'full'}
 ];
 
 @NgModule({
