@@ -1,18 +1,30 @@
 import * as firebase from 'firebase';
+import {Injectable} from '@angular/core';
+import {AppState} from '../store/app.reducers';
+import {Store} from '@ngrx/store';
+import * as AuthActions from './store/auth.actions';
 
+@Injectable()
 export class AuthService {
 
-    private token: string;
+    constructor(private store: Store<AppState>) { }
 
     signupUser(email: string, password: string) {
         firebase.auth().createUserWithEmailAndPassword(email, password)
+            .then(
+                () => {
+                    this.store.dispatch(new AuthActions.Signup());
+                    this.refreshToken();
+                }
+            )
             .catch((error) => console.log(error));
     }
 
     signinUser(email: string, password: string) {
         return firebase.auth().signInWithEmailAndPassword(email, password)
             .then(
-                (response) => {
+                () => {
+                    this.store.dispatch(new AuthActions.Signin());
                     this.refreshToken();
                 }
             )
@@ -21,26 +33,17 @@ export class AuthService {
             });
     }
 
-    getToken(): string {
-        this.refreshToken();
-        return this.token;
-    }
-
     private refreshToken() {
         firebase.auth().currentUser.getIdToken()
             .then(
                 (token: string) => {
-                    this.token = token;
+                    this.store.dispatch(new AuthActions.SetToken(token));
                 }
             );
     }
 
-    isAuthenticated(): boolean {
-        return !!this.token;
-    }
-
     logout() {
         firebase.auth().signOut();
-        this.token = null;
+        this.store.dispatch(new AuthActions.Logout());
     }
 }
