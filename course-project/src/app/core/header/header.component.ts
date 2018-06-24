@@ -3,9 +3,9 @@ import {Observable} from 'rxjs';
 import {Store} from '@ngrx/store';
 
 import {RecipeService} from '../../recipe-book/recipe.service';
-import {AuthService} from '../../auth/auth.service';
 import * as fromAuth from '../../auth/store/auth.reducers';
 import {AppState} from '../../store/app.reducers';
+import * as AuthActions from '../../auth/store/auth.actions';
 
 
 @Component({
@@ -17,8 +17,7 @@ export class HeaderComponent implements OnInit {
     authState: Observable<fromAuth.State>;
 
     constructor(private store: Store<AppState>,
-                private recipeService: RecipeService,
-                public authService: AuthService) {
+                private recipeService: RecipeService) {
     }
 
     ngOnInit() {
@@ -31,5 +30,9 @@ export class HeaderComponent implements OnInit {
 
     onSaveData() {
         this.recipeService.saveRecipes();
+    }
+
+    onLogout() {
+        this.store.dispatch(new AuthActions.Logout());
     }
 }

@@ -3,7 +3,6 @@ import {HeaderComponent} from './header/header.component';
 import {HomeComponent} from './home/home.component';
 import {SharedModule} from '../shared/shared.module';
 import {AppRoutingModule} from '../app-routing.module';
-import {AuthService} from '../auth/auth.service';
 import {RecipeService} from '../recipe-book/recipe.service';
 import {ServerService} from '../shared/server.service';
 import {HTTP_INTERCEPTORS} from '@angular/common/http';
@@ -25,7 +24,6 @@ import {AuthInterceptor} from '../shared/auth.interceptor';
     providers: [
         RecipeService,
         ServerService,
-        AuthService,
         { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}
     ]
 })
