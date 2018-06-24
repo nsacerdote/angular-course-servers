@@ -1,8 +1,10 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Ingredient} from '../../shared/ingredient.model';
-import {ShoppingListService} from '../shopping-list.service';
 import {NgForm} from '@angular/forms';
 import {Subscription} from 'rxjs';
+import {Store} from '@ngrx/store';
+import * as ShoppingListActions from '../store/shopping-list.actions';
+import * as fromShoppingList from '../store/shopping-list.reducers';
 
 @Component({
     selector: 'app-shopping-edit',
@@ -14,26 +16,27 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
     @ViewChild('f') shoppingListForm: NgForm;
     subscription: Subscription;
     editMode;
-    editIngredientIndex: number;
 
-    constructor(private shoppingListService: ShoppingListService) {
+    constructor(private store: Store<fromShoppingList.AppState>) {
     }
 
     ngOnInit() {
         this.resetFormStatus();
-        this.subscription = this.shoppingListService.ingredientEditStarted.subscribe(
-            (index: number) => {
-                this.editMode = true;
-                this.editIngredientIndex = index;
-                const editIngredient = this.shoppingListService.getIngredient(this.editIngredientIndex);
-                this.shoppingListForm.setValue(editIngredient);
-            }
-        );
+        this.subscription = this.store.select('shoppingList')
+            .subscribe(
+                (data: fromShoppingList.State) => {
+                    if (data.editingIngredient) {
+                        this.editMode = true;
+                        this.shoppingListForm.setValue(data.editingIngredient);
+                    } else {
+                        this.editMode = false;
+                    }
+                }
+            );
     }
 
     resetFormStatus() {
         this.editMode = false;
-        this.editIngredientIndex = null;
         this.shoppingListForm.reset();
     }
 
@@ -41,19 +44,24 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
         const formValue = this.shoppingListForm.value;
         const formIngredient = new Ingredient(formValue.name, +formValue.amount);
         if (this.editMode) {
-            this.shoppingListService.updateIngredient(this.editIngredientIndex, formIngredient);
+            this.store.dispatch(
+                new ShoppingListActions.UpdateIngredient({
+                    updatedIngredient: formIngredient
+                })
+            );
         } else {
-            this.shoppingListService.addIngredient(formIngredient);
+            this.store.dispatch(new ShoppingListActions.AddIngredient(formIngredient));
         }
         this.resetFormStatus();
     }
 
     onDelete() {
-        this.shoppingListService.deleteIngredient(this.editIngredientIndex);
+        this.store.dispatch(new ShoppingListActions.DeleteIngredient());
         this.resetFormStatus();
     }
 
     ngOnDestroy(): void {
+        this.store.dispatch(new ShoppingListActions.StopEditIngredient());
         this.subscription.unsubscribe();
     }
 }
