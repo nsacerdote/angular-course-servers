@@ -7,7 +7,7 @@ import {RecipeBookComponent} from './recipe-book.component';
 import {RecipeDetailComponent} from './recipe-detail/recipe-detail.component';
 
 const recipeRoutes: Routes = [
-    { path: 'recipes', component: RecipeBookComponent, children: [
+    { path: '', component: RecipeBookComponent, children: [
             { path : '', component: SelectRecipeComponent, pathMatch: 'full' },
             { path : 'new', component: RecipeEditComponent , canActivate : [AuthGuard]},
             { path : ':id', component: RecipeDetailComponent },

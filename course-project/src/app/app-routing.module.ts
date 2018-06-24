@@ -8,9 +8,12 @@ import {RecipeEditComponent} from './recipe-book/recipe-edit/recipe-edit.compone
 import {SignupComponent} from './auth/signup/signup.component';
 import {SigninComponent} from './auth/signin/signin.component';
 import {AuthGuard} from './auth/auth-guard.service';
+import {HomeComponent} from './home/home.component';
+import {RecipeRoutingModule} from './recipe-book/recipe-routing.module';
 
 const appRoutes: Routes = [
-    { path: '', redirectTo: '/recipes', pathMatch: 'full'}
+    { path: '', component: HomeComponent },
+    { path: 'recipes', loadChildren: './recipe-book/recipe.module#RecipeModule' },
 ];
 
 @NgModule({
