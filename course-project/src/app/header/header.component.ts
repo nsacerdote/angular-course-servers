@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {RecipeService} from '../recipe-book/recipe.service';
+import {AuthService} from '../auth/auth.service';
 
 @Component({
     selector: 'app-header',
@@ -7,7 +8,8 @@ import {RecipeService} from '../recipe-book/recipe.service';
     styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-    constructor(private recipeService: RecipeService) {
+    constructor(private recipeService: RecipeService,
+                public authService: AuthService) {
     }
 
     ngOnInit() {
