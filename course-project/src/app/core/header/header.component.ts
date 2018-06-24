@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {RecipeService} from '../recipe-book/recipe.service';
-import {AuthService} from '../auth/auth.service';
+import {RecipeService} from '../../recipe-book/recipe.service';
+import {AuthService} from '../../auth/auth.service';
 
 @Component({
     selector: 'app-header',
