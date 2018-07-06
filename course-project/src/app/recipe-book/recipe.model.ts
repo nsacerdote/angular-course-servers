@@ -10,6 +10,7 @@ export class Recipe {
     public ingredients: Ingredient[];
 
     constructor(name: string, description: string, imagePath: string, ingredients: Ingredient[]) {
+        this.id = Recipe.currentId++;
         this.name = name;
         this.description = description;
         this.imagePath = imagePath;

@@ -1,10 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {Recipe} from '../recipe.model';
 import {ActivatedRoute, Params, Router} from '@angular/router';
-import {RecipeService} from '../recipe.service';
 import {Store} from '@ngrx/store';
 import * as ShoppingListActions from '../../shopping-list/store/shopping-list.actions';
-import {AppState} from '../../store/app.reducers';
+import {FeatureState, State} from '../store/recipe.reducers';
+import {Subscription} from 'rxjs';
+import {Recipe} from '../recipe.model';
+import {DeleteRecipe} from '../store/recipe.actions';
 
 @Component({
     selector: 'app-recipe-detail',
@@ -14,26 +15,35 @@ import {AppState} from '../../store/app.reducers';
 export class RecipeDetailComponent implements OnInit {
 
     recipe: Recipe;
+    subscription: Subscription;
+    id: number;
 
     constructor(private router: Router,
                 private activatedRoute: ActivatedRoute,
-                private recipeService: RecipeService,
-                private store: Store<AppState>) { }
+                private store: Store<FeatureState>) { }
 
     ngOnInit() {
         this.activatedRoute.params.subscribe(
             (params: Params) => {
-                this.recipe = this.recipeService.getRecipe(+params['id']);
+                this.id = +params['id'];
+                this.subscription = this.store.select('recipeBook').subscribe(
+                    (state: State) => {
+                        this.recipe = state.recipes.find((recipe) => (recipe.id === this.id));
+                    }
+                );
             }
         );
     }
-
     onAddToShoppingList() {
-        this.store.dispatch(new ShoppingListActions.AddIngredients(this.recipe.ingredients));
+        this.store.dispatch(new ShoppingListActions.AddIngredients(
+            this.recipe.ingredients
+        ));
     }
 
     onDeleteRecipe() {
-        this.recipeService.deleteRecipe(this.recipe);
+        this.store.dispatch(new DeleteRecipe(
+            this.id
+        ));
         this.router.navigate(['../'], {relativeTo: this.activatedRoute});
     }
 }

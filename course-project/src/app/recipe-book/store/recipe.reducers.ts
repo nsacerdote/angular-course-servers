@@ -1,7 +1,9 @@
 import {Ingredient} from '../../shared/ingredient.model';
 import {Recipe} from '../recipe.model';
+import * as RecipeActions from './recipe.actions';
+import { AppState } from '../../store/app.reducers';
 
-export interface FeatureState {
+export interface FeatureState extends AppState{
     recipeBook: State;
 }
 
@@ -27,6 +29,39 @@ const initialState: State = {
     ]
 };
 
-export function recipeReducer(state, action) {
+export function recipeReducer(state = initialState, action: RecipeActions.RecipeActions) {
+    switch (action.type) {
+        case (RecipeActions.SET_RECIPES):
+            return {
+                ...state,
+                recipes : [...action.payload]
+            };
+        case (RecipeActions.ADD_RECIPE):
+            return {
+                ...state,
+                recipes : [...state.recipes, action.payload]
+            };
+        case (RecipeActions.UPDATE_RECIPE): {
+            const recipes = [...state.recipes];
+            recipes[
+                recipes.findIndex((recipe) => (recipe.id === action.payload.id))
+                ] = action.payload.recipe;
+            return {
+                ...state,
+                recipes: recipes
+            };
+        }
+        case (RecipeActions.DELETE_RECIPE): {
+            const recipes = [...state.recipes];
+            recipes.splice(
+                recipes.findIndex((recipe) => (recipe.id === action.payload)),
+                1
+            );
+            return {
+                ...state,
+                recipes : recipes
+            };
+        }
+    }
     return state;
 }

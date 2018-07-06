@@ -1,9 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
-import {RecipeService} from '../recipe.service';
 import {Recipe} from '../recipe.model';
 import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Ingredient} from '../../shared/ingredient.model';
+import {FeatureState, State} from '../store/recipe.reducers';
+import {Store} from '@ngrx/store';
+import {take} from 'rxjs/operators';
+import {AddRecipe, UpdateRecipe} from '../store/recipe.actions';
 
 @Component({
     selector: 'app-recipe-edit',
@@ -18,7 +21,7 @@ export class RecipeEditComponent implements OnInit {
 
     constructor(private router: Router,
                 private activatedRoute: ActivatedRoute,
-                private recipeService: RecipeService) {
+                private store: Store<FeatureState>) {
     }
 
     ngOnInit() {
@@ -32,7 +35,13 @@ export class RecipeEditComponent implements OnInit {
     private init(idParam: string) {
         this.editMode = !!idParam;
         if (this.editMode) {
-            this.recipe = this.recipeService.getRecipe(+idParam);
+            this.store.select('recipeBook').pipe(
+                take(1)
+            ).subscribe((recipeState: State) => {
+                this.recipe = recipeState.recipes.find(
+                    (recipe) => (recipe.id === +idParam)
+                );
+            });
         } else {
             this.recipe = new Recipe('', '', '', []);
         }
@@ -65,10 +74,15 @@ export class RecipeEditComponent implements OnInit {
     onSubmit() {
         const recipe: Recipe = this.obtainRecipeFromRecipeForm();
         if (this.editMode) {
-            this.recipeService.updateRecipe(recipe);
+            this.store.dispatch(new UpdateRecipe(
+                { id : this.recipe.id,
+                  recipe : recipe}
+            ));
             this.router.navigate(['../'], {relativeTo: this.activatedRoute});
         } else {
-            this.recipeService.addRecipe(recipe);
+            this.store.dispatch(new AddRecipe(
+                recipe
+            ));
             this.router.navigate(['../', recipe.id], {relativeTo: this.activatedRoute});
         }
     }
